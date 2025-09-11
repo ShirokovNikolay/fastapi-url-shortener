@@ -17,7 +17,7 @@ router = APIRouter(
 
 
 @router.get(
-    "/short-urls/",
+    "/",
     response_model=list[ShortUrl],
 )
 def read_short_urls_list():
@@ -25,7 +25,7 @@ def read_short_urls_list():
 
 
 @router.get(
-    "/short-urls/{slug}/",
+    "/{slug}/",
     response_model=ShortUrl,
 )
 def read_short_url_details(
