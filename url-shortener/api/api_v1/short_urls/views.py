@@ -11,7 +11,7 @@ from schemas.short_url import ShortUrl, ShortUrlCreate
 from .dependencies import (
     prefetch_short_urls,
 )
-from .crud import SHORT_URLS
+from .crud import storage
 
 router = APIRouter(
     prefix="/short-urls",
@@ -23,8 +23,8 @@ router = APIRouter(
     "/",
     response_model=list[ShortUrl],
 )
-def read_short_urls_list():
-    return SHORT_URLS
+def read_short_urls_list() -> list[ShortUrl]:
+    return storage.get()
 
 
 @router.post(
@@ -32,10 +32,10 @@ def read_short_urls_list():
     response_model=ShortUrl,
     status_code=status.HTTP_201_CREATED,
 )
-def create_short_url(short_url_create: ShortUrlCreate):
-    return ShortUrl(
-        **short_url_create.model_dump(),
-    )
+def create_short_url(
+    short_url_create: ShortUrlCreate,
+) -> ShortUrlCreate:
+    return storage.create(short_url_create)
 
 
 @router.get(

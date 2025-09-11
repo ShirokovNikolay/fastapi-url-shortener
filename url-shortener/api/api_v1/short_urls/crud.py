@@ -1,12 +1,33 @@
-from schemas.short_url import ShortUrl
+from pydantic import BaseModel, AnyHttpUrl
 
-SHORT_URLS = [
-    ShortUrl(
-        target_url="https://leetcode.com",
-        slug="leetcode",
-    ),
-    ShortUrl(
-        target_url="https://google.com",
+from schemas.short_url import ShortUrl, ShortUrlCreate
+
+
+class ShortUrlsStorage(BaseModel):
+    slug_to_short_url: dict[str, ShortUrl] = {}
+
+    def get(self) -> list[ShortUrl]:
+        return list(self.slug_to_short_url.values())
+
+    def get_by_slug(self, slug: str) -> ShortUrl | None:
+        return self.slug_to_short_url.get(slug, None)
+
+    def create(self, short_url_in: ShortUrlCreate) -> ShortUrl:
+        short_url = ShortUrl(**short_url_in.model_dump())
+        self.slug_to_short_url[short_url.slug] = short_url
+        return short_url
+
+
+storage = ShortUrlsStorage()
+storage.create(
+    ShortUrlCreate(
+        target_url=AnyHttpUrl("https://google.com"),
         slug="search",
-    ),
-]
+    )
+)
+storage.create(
+    ShortUrlCreate(
+        target_url=AnyHttpUrl("https://leetcode.com"),
+        slug="leetcode",
+    )
+)
