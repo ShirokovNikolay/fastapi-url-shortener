@@ -9,6 +9,7 @@ from fastapi import (
 from schemas.short_url import (
     ShortUrl,
     ShortUrlUpdate,
+    ShortUrlPartialUpdate,
 )
 
 from api.api_v1.short_urls.dependencies import (
@@ -42,7 +43,7 @@ ShortUrlBySlug = Annotated[
     "/",
     response_model=ShortUrl,
 )
-def read_short_url_details(url: ShortUrlBySlug):
+def read_short_url_details(url: ShortUrlBySlug) -> ShortUrl:
     return url
 
 
@@ -50,8 +51,25 @@ def read_short_url_details(url: ShortUrlBySlug):
     "/",
     response_model=ShortUrl,
 )
-def update_short_url_details(url: ShortUrlBySlug, short_url_in: ShortUrlUpdate):
+def update_short_url_details(
+    url: ShortUrlBySlug,
+    short_url_in: ShortUrlUpdate,
+) -> ShortUrl:
     return storage.update(
+        short_url=url,
+        short_url_in=short_url_in,
+    )
+
+
+@router.patch(
+    "/",
+    response_model=ShortUrl,
+)
+def update_short_url_details_partial(
+    url: ShortUrlBySlug,
+    short_url_in: ShortUrlPartialUpdate,
+) -> ShortUrl:
+    return storage.update_partial(
         short_url=url,
         short_url_in=short_url_in,
     )
