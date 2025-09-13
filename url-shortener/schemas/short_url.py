@@ -17,7 +17,7 @@ class ShortUrlBase(BaseModel):
 
 class ShortUrlCreate(ShortUrlBase):
     """
-    Модель для создания сокращённой ссылки
+    Модель для создания сокращённой ссылки.
     """
 
     # noinspection PyTypeHints
@@ -29,7 +29,7 @@ class ShortUrlCreate(ShortUrlBase):
 
 class ShortUrlUpdate(ShortUrlBase):
     """
-    Модель для обновления информации о сокращённой ссылке
+    Модель для обновления информации о сокращённой ссылке.
     """
 
     target_url: AnyHttpUrl
@@ -39,16 +39,24 @@ class ShortUrlUpdate(ShortUrlBase):
 class ShortUrlPartialUpdate(ShortUrlBase):
     """
     Модель для частичного обновления информации
-    о сокращённой ссылке
+    о сокращённой ссылке.
     """
 
     target_url: AnyHttpUrl | None = None
     description: DescriptionString | None = None
 
 
+class ShortUrlRead(ShortUrlBase):
+    """
+    Модель для чтения данных по короткой ссылке.
+    """
+
+    slug: str
+
+
 class ShortUrl(ShortUrlBase):
     """
-    Модель сокращённой ссылки
+    Модель сокращённой ссылки.
     """
 
     slug: str
