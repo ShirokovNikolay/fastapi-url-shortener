@@ -30,4 +30,4 @@ def read_short_urls_list() -> list[ShortUrl]:
 def create_short_url(
     short_url_create: ShortUrlCreate,
 ) -> ShortUrlCreate:
-    return storage.create(short_url_create)
+    return storage.create(short_url_in=short_url_create)
