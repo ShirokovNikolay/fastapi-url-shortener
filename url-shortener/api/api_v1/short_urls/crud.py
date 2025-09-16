@@ -1,7 +1,4 @@
-import json
-
-from pydantic import BaseModel, AnyHttpUrl
-from pydantic_core import from_json
+from pydantic import BaseModel
 
 from schemas.short_url import (
     ShortUrl,
@@ -9,6 +6,9 @@ from schemas.short_url import (
     ShortUrlUpdate,
     ShortUrlPartialUpdate,
 )
+
+import json
+from pathlib import Path
 
 
 class ShortUrlsStorage(BaseModel):
@@ -19,13 +19,19 @@ class ShortUrlsStorage(BaseModel):
             slug: short_url.model_dump_json(indent=2)
             for slug, short_url in self.slug_to_short_url.items()
         }
-        with open("short_urls.json", "w") as file:
+        path = Path("short_urls.json")
+        if not path.exists():
+            path.touch()
+        with path.open("w") as file:
             json.dump(result, file, indent=2)
 
     def from_state(self) -> None:
-        with open("short_urls.json", "r") as file:
+        path = Path("short_urls.json")
+        if not path.exists():
+            path.touch()
+        with path.open("r") as file:
             self.slug_to_short_url = {
-                slug: from_json(short_url)
+                slug: ShortUrl.model_validate_json(short_url)
                 for slug, short_url in json.load(file).items()
             }
 
