@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
 from schemas.short_url import (
     ShortUrl,
@@ -7,33 +7,20 @@ from schemas.short_url import (
     ShortUrlPartialUpdate,
 )
 
-import json
-from pathlib import Path
+from core.config import SHORT_URLS_STORAGE_FILEPATH
 
 
 class ShortUrlsStorage(BaseModel):
     slug_to_short_url: dict[str, ShortUrl] = {}
 
     def save_state(self) -> None:
-        result = {
-            slug: short_url.model_dump_json(indent=2)
-            for slug, short_url in self.slug_to_short_url.items()
-        }
-        path = Path("short_urls.json")
-        if not path.exists():
-            path.touch()
-        with path.open("w") as file:
-            json.dump(result, file, indent=2)
+        SHORT_URLS_STORAGE_FILEPATH.write_text(self.model_dump_json(indent=2))
 
-    def from_state(self) -> None:
-        path = Path("short_urls.json")
-        if not path.exists():
-            path.touch()
-        with path.open("r") as file:
-            self.slug_to_short_url = {
-                slug: ShortUrl.model_validate_json(short_url)
-                for slug, short_url in json.load(file).items()
-            }
+    @classmethod
+    def from_state(cls) -> "ShortUrlsStorage":
+        if not SHORT_URLS_STORAGE_FILEPATH.exists():
+            return ShortUrlsStorage()
+        return cls.model_validate_json(SHORT_URLS_STORAGE_FILEPATH.read_text())
 
     def get(self) -> list[ShortUrl]:
         return list(self.slug_to_short_url.values())
@@ -53,7 +40,6 @@ class ShortUrlsStorage(BaseModel):
 
     def delete(self, short_url: ShortUrl) -> None:
         self.delete_by_slug(slug=short_url.slug)
-        self.save_state()
 
     def update(self, short_url: ShortUrl, short_url_in: ShortUrlUpdate) -> ShortUrl:
         for field_name, value in short_url_in:
@@ -72,8 +58,8 @@ class ShortUrlsStorage(BaseModel):
         return short_url
 
 
-storage = ShortUrlsStorage()
 try:
-    storage.from_state()
-except json.JSONDecodeError:
+    storage = ShortUrlsStorage.from_state()
+except ValidationError:
+    storage = ShortUrlsStorage()
     storage.save_state()
