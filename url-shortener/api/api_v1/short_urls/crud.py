@@ -17,7 +17,7 @@ log = logging.getLogger(__name__)
 class ShortUrlsStorage(BaseModel):
     slug_to_short_url: dict[str, ShortUrl] = {}
 
-    def init_from_state(self) -> None:
+    def init_storage_from_state(self) -> None:
         try:
             data = ShortUrlsStorage.from_state()
             log.warning("Recovered data from storage file.")
@@ -53,20 +53,20 @@ class ShortUrlsStorage(BaseModel):
     def create(self, short_url_in: ShortUrlCreate) -> ShortUrl:
         short_url = ShortUrl(**short_url_in.model_dump())
         self.slug_to_short_url[short_url.slug] = short_url
-        self.save_state()
+        log.info("Created short url %s", short_url)
         return short_url
 
     def delete_by_slug(self, slug) -> None:
         self.slug_to_short_url.pop(slug, None)
-        self.save_state()
 
     def delete(self, short_url: ShortUrl) -> None:
         self.delete_by_slug(slug=short_url.slug)
+        log.info("Deleted short url %s", short_url)
 
     def update(self, short_url: ShortUrl, short_url_in: ShortUrlUpdate) -> ShortUrl:
         for field_name, value in short_url_in:
             setattr(short_url, field_name, value)
-        self.save_state()
+        log.info("Updated short url %s", short_url)
         return short_url
 
     def update_partial(
@@ -74,9 +74,15 @@ class ShortUrlsStorage(BaseModel):
         short_url: ShortUrl,
         short_url_in: ShortUrlPartialUpdate,
     ) -> ShortUrl:
+        parameters = []
         for field_name, value in short_url_in.model_dump(exclude_unset=True).items():
             setattr(short_url, field_name, value)
-        self.save_state()
+            parameters.append("%s = %s" % (field_name, value))
+
+        log.info(
+            "Updated partial short url %s",
+            " ".join(parameters),
+        )
         return short_url
 
 
