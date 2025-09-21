@@ -61,7 +61,7 @@ class ShortUrlsStorage(BaseModel):
 
     def delete(self, short_url: ShortUrl) -> None:
         self.delete_by_slug(slug=short_url.slug)
-        log.info("Deleted short url %", short_url)
+        log.info("Deleted short url %s", short_url)
 
     def update(self, short_url: ShortUrl, short_url_in: ShortUrlUpdate) -> ShortUrl:
         for field_name, value in short_url_in:
@@ -77,7 +77,7 @@ class ShortUrlsStorage(BaseModel):
         parameters = []
         for field_name, value in short_url_in.model_dump(exclude_unset=True).items():
             setattr(short_url, field_name, value)
-            parameters.append("%s = %s" % (field_name, value))
+            parameters.append("%s=%r" % (field_name, value))
 
         log.info(
             "Updated partial short url %s",
