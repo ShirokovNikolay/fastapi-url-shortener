@@ -1,8 +1,14 @@
-from fastapi import APIRouter, Depends
-from starlette import status
+from fastapi import (
+    APIRouter,
+    Depends,
+    status,
+)
 
 from api.api_v1.short_urls.crud import storage
-from api.api_v1.short_urls.dependencies import save_storage_state
+from api.api_v1.short_urls.dependencies import (
+    save_storage_state,
+    api_token_required,
+)
 from schemas.short_url import (
     ShortUrl,
     ShortUrlCreate,
@@ -31,5 +37,6 @@ def read_short_urls_list() -> list[ShortUrl]:
 )
 def create_short_url(
     short_url_create: ShortUrlCreate,
+    _=Depends(api_token_required),
 ) -> ShortUrlCreate:
     return storage.create(short_url_in=short_url_create)
