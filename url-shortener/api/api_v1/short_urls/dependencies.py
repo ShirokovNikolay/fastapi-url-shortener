@@ -5,9 +5,9 @@ from fastapi import (
     HTTPException,
     BackgroundTasks,
     Request,
-    Query,
+    Header,
+    status,
 )
-from starlette import status
 
 from schemas.short_url import ShortUrl
 from .crud import storage
@@ -52,7 +52,7 @@ def save_storage_state(
 def api_token_required(
     api_token: Annotated[
         str,
-        Query(),
+        Header(alias="x-auth-token"),
     ],
 ) -> None:
     if api_token not in config.API_TOKENS:
