@@ -5,7 +5,7 @@ from fastapi import (
     HTTPException,
     BackgroundTasks,
     Request,
-    Header,
+    Query,
     status,
 )
 
@@ -33,7 +33,7 @@ def prefetch_short_urls(
         return url
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
-        detail=f"URL {slug!r} not found",
+        detail=f"URL {slug!r} not found.",
     )
 
 
@@ -49,14 +49,19 @@ def save_storage_state(
         background_tasks.add_task(storage.save_state)
 
 
-def api_token_required(
+def api_token_required_for_unsafe_methods(
+    request: Request,
     api_token: Annotated[
         str,
-        Header(alias="x-auth-token"),
-    ],
+        Query(),
+    ] = "",
 ) -> None:
+
+    if request.method not in UNSAFE_METHODS:
+        return
+
     if api_token not in config.API_TOKENS:
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Invalid API token",
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid API token.",
         )
