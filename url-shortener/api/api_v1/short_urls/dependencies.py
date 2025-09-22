@@ -5,7 +5,7 @@ from fastapi import (
     HTTPException,
     BackgroundTasks,
     Request,
-    Query,
+    Header,
     status,
 )
 
@@ -53,7 +53,7 @@ def api_token_required_for_unsafe_methods(
     request: Request,
     api_token: Annotated[
         str,
-        Query(),
+        Header(alias="x-auth-token"),
     ] = "",
 ) -> None:
 
