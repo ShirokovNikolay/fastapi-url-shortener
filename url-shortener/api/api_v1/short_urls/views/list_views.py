@@ -7,7 +7,7 @@ from fastapi import (
 from api.api_v1.short_urls.crud import storage
 from api.api_v1.short_urls.dependencies import (
     save_storage_state,
-    api_token_required,
+    api_token_required_for_unsafe_methods,
 )
 from schemas.short_url import (
     ShortUrl,
@@ -18,7 +18,22 @@ from schemas.short_url import (
 router = APIRouter(
     prefix="/short-urls",
     tags=["Short URLs"],
-    dependencies=[Depends(save_storage_state)],
+    dependencies=[
+        Depends(save_storage_state),
+        Depends(api_token_required_for_unsafe_methods),
+    ],
+    responses={
+        status.HTTP_401_UNAUTHORIZED: {
+            "description": "Unauthenticated. Only for unsafe methods.",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "detail": "Invalid API token.",
+                    },
+                },
+            },
+        },
+    },
 )
 
 
@@ -37,6 +52,5 @@ def read_short_urls_list() -> list[ShortUrl]:
 )
 def create_short_url(
     short_url_create: ShortUrlCreate,
-    _=Depends(api_token_required),
 ) -> ShortUrlCreate:
     return storage.create(short_url_in=short_url_create)
