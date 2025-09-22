@@ -22,11 +22,11 @@ router = APIRouter(
     prefix="/{slug}",
     responses={
         status.HTTP_404_NOT_FOUND: {
-            "description": "Short URL not found",
+            "description": "Short URL not found.",
             "content": {
                 "application/json": {
                     "example": {
-                        "detail": "URL 'slug' not found",
+                        "detail": "URL 'slug' not found.",
                     },
                 },
             },
