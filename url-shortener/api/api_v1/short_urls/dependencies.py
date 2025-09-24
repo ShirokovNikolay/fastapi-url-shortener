@@ -127,7 +127,7 @@ def user_basic_auth_required_for_unsafe_methods(
         HTTPBasicCredentials | None,
         Depends(user_basic_auth),
     ],
-):
+) -> None:
     if request.method not in UNSAFE_METHODS:
         return
 
@@ -147,7 +147,7 @@ def api_token_or_user_basic_auth_required_for_unsafe_methods(
         HTTPBasicCredentials | None,
         Depends(user_basic_auth),
     ],
-):
+) -> None:
     if request.method not in UNSAFE_METHODS:
         return
 
