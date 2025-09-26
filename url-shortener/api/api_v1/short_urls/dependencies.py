@@ -3,7 +3,6 @@ from typing import Annotated
 
 from fastapi import (
     HTTPException,
-    BackgroundTasks,
     Request,
     status,
     Depends,
@@ -57,18 +56,6 @@ def prefetch_short_urls(
         status_code=status.HTTP_404_NOT_FOUND,
         detail=f"URL {slug!r} not found.",
     )
-
-
-def save_storage_state(
-    request: Request,
-    background_tasks: BackgroundTasks,
-) -> None:
-    # Выполняется код до входа внутрь view функции.
-    yield
-    # Выполняется код после выхода из view функции.
-    if request.method in UNSAFE_METHODS:
-        log.info("Add background task to save storage.")
-        background_tasks.add_task(storage.save_state)
 
 
 def validate_api_token(
