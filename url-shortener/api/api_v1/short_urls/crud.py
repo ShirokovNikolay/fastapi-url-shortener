@@ -53,6 +53,13 @@ class ShortUrlsStorage(BaseModel):
             return ShortUrlsStorage()
         return cls.model_validate_json(SHORT_URLS_STORAGE_FILEPATH.read_text())
 
+    def save_short_url(self, short_url: ShortUrl) -> None:
+        redis.hset(
+            name=config.REDIS_SHORT_URLS_HASH_NAME,
+            key=short_url.slug,
+            value=short_url.model_dump_json(),
+        )
+
     def get(self) -> list[ShortUrl]:
         return [
             ShortUrl.model_validate_json(value)
@@ -69,11 +76,7 @@ class ShortUrlsStorage(BaseModel):
     def create(self, short_url_in: ShortUrlCreate) -> ShortUrl:
         short_url = ShortUrl(**short_url_in.model_dump())
         self.slug_to_short_url[short_url.slug] = short_url
-        redis.hset(
-            name=config.REDIS_SHORT_URLS_HASH_NAME,
-            key=short_url.slug,
-            value=short_url.model_dump_json(),
-        )
+        self.save_short_url(short_url=short_url)
         log.info("Created short url %s", short_url)
         return short_url
 
@@ -87,6 +90,7 @@ class ShortUrlsStorage(BaseModel):
     def update(self, short_url: ShortUrl, short_url_in: ShortUrlUpdate) -> ShortUrl:
         for field_name, value in short_url_in:
             setattr(short_url, field_name, value)
+        self.save_short_url(short_url=short_url)
         log.info("Updated short url %s", short_url)
         return short_url
 
@@ -99,7 +103,7 @@ class ShortUrlsStorage(BaseModel):
         for field_name, value in short_url_in.model_dump(exclude_unset=True).items():
             setattr(short_url, field_name, value)
             parameters.append("%s=%r" % (field_name, value))
-
+        self.save_short_url(short_url=short_url)
         log.info(
             "Updated partial short url %s",
             " ".join(parameters),
