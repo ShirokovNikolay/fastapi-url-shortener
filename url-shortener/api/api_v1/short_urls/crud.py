@@ -1,4 +1,6 @@
 import logging
+from collections.abc import Iterable
+from typing import cast
 
 from pydantic import BaseModel
 from redis import Redis
@@ -47,7 +49,9 @@ class ShortUrlsStorage(BaseModel):
     def get(self) -> list[ShortUrl]:
         return [
             ShortUrl.model_validate_json(value)
-            for value in redis.hvals(name=config.REDIS_SHORT_URLS_HASH_NAME)
+            for value in cast(
+                Iterable[str], redis.hvals(name=config.REDIS_SHORT_URLS_HASH_NAME)
+            )
         ]
 
     def get_by_slug(self, slug: str) -> ShortUrl | None:
@@ -55,7 +59,10 @@ class ShortUrlsStorage(BaseModel):
             name=config.REDIS_SHORT_URLS_HASH_NAME,
             key=slug,
         ):
+            assert isinstance(data, str)
             return ShortUrl.model_validate_json(data)
+
+        return None
 
     def create(self, short_url_in: ShortUrlCreate) -> ShortUrl:
         short_url = ShortUrl(**short_url_in.model_dump())
@@ -64,9 +71,12 @@ class ShortUrlsStorage(BaseModel):
         return short_url
 
     def exists(self, slug: str) -> bool:
-        return redis.hexists(
-            name=config.REDIS_SHORT_URLS_HASH_NAME,
-            key=slug,
+        return cast(
+            bool,
+            redis.hexists(
+                name=config.REDIS_SHORT_URLS_HASH_NAME,
+                key=slug,
+            ),
         )
 
     def create_or_raise_if_exists(self, short_url_in: ShortUrlCreate) -> ShortUrl:

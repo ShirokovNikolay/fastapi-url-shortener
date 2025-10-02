@@ -1,3 +1,5 @@
+from typing import cast
+
 from redis import Redis
 
 from api.api_v1.auth.services.tokens_helper import AbstractTokensHelper
@@ -33,8 +35,11 @@ class RedisTokensHelper(AbstractTokensHelper):
 
     def get_tokens(self) -> list[str]:
         return list(
-            self.redis.smembers(
-                name=self.tokens_set,
+            cast(
+                set[str],
+                self.redis.smembers(
+                    name=self.tokens_set,
+                ),
             )
         )
 

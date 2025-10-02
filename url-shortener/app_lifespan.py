@@ -1,10 +1,12 @@
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
+from typing import Never
 
 from fastapi import FastAPI
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI) -> None:
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     # Действия до запуска приложения.
     # Ставим функцию на паузу на время
     # работы приложения.
