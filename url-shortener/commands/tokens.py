@@ -69,13 +69,21 @@ def add(
     """
     if tokens.token_exists(token):
         print(f"Token [bold]{token}[/bold] [red]already exists[/red].")
-    else:
-        tokens.add_token(token)
-        print(f"Token [bold]{token}[/bold] [green]added to database[/green].")
+        return
+
+    tokens.add_token(token)
+    print(f"Token [bold]{token}[/bold] [green]added to database[/green].")
 
 
 @app.command(name="rm")
-def delete(token: str) -> None:
+def delete(
+    token: Annotated[
+        str,
+        typer.Argument(
+            help="The token to delete.",
+        ),
+    ],
+) -> None:
     """
     Delete token if such token exists in database.
     """
