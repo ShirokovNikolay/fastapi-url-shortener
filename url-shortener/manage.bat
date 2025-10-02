@@ -1,2 +1,2 @@
-echo off
+@echo off
 uv run --script manage.py %*
