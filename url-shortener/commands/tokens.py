@@ -4,11 +4,11 @@ import typer
 from rich import print
 from rich.markdown import Markdown
 
-from api.api_v1.auth.services import redis_tokens
+from api.api_v1.auth.services import redis_tokens as tokens
 
 app = typer.Typer(
-    name="tokens",
-    help="Tokens management",
+    name="token",
+    help="Tokens management.",
     no_args_is_help=True,
     rich_markup_mode="rich",
 )
@@ -19,7 +19,7 @@ def check(
     token: Annotated[
         str,
         typer.Argument(
-            help="The token to check",
+            help="The token to check.",
         ),
     ],
 ) -> None:
@@ -29,9 +29,9 @@ def check(
     print(
         f"Token [bold]{token}[/bold]",
         (
-            "[green]exists[/green]."
-            if redis_tokens.token_exists(token)
-            else "[red]does not exist[/red]."
+            "[bold green]exists[/green bold]."
+            if tokens.token_exists(token)
+            else "[bold red]does not exist[/red bold]."
         ),
     )
 
@@ -42,5 +42,46 @@ def list_tokens() -> None:
     List all tokens.
     """
     print(Markdown("# Available API Tokens"))
-    print(Markdown("\n- ".join([""] + redis_tokens.get_tokens())))
+    print(Markdown("\n- ".join([""] + tokens.get_tokens())))
     print()
+
+
+@app.command()
+def create() -> None:
+    """
+    Create a new token and save to database.
+    """
+    new_token = tokens.generate_and_save_token()
+    print(f"Created token [bold][green]{new_token}[/green][/bold]")
+
+
+@app.command()
+def add(
+    token: Annotated[
+        str,
+        typer.Argument(
+            help="The token to add.",
+        ),
+    ],
+) -> None:
+    """
+    Add a new token if such token doesn't exist.
+    """
+    if tokens.token_exists(token):
+        print(f"Token [bold]{token}[/bold] [red]already exists[/red].")
+    else:
+        tokens.add_token(token)
+        print(f"Token [bold]{token}[/bold] [green]added to database[/green].")
+
+
+@app.command(name="rm")
+def delete(token: str) -> None:
+    """
+    Delete token if such token exists in database.
+    """
+    if not tokens.token_exists(token):
+        print(f"Token [bold]{token} [red]does not exist[/red][/bold].")
+        return
+
+    tokens.delete_token(token)
+    print(f"Token [bold]{token}[/bold] [green]removed from database[/green].")
