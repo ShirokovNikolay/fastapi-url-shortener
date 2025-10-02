@@ -1,4 +1,4 @@
-__all__ = "app"
+__all__ = ["app"]
 import typer
 
 from .hello import app as hello_app
@@ -14,7 +14,7 @@ app.add_typer(tokens_app)
 
 
 @app.callback()
-def callback():
+def callback() -> None:
     """
     Some CLI management commands.
     """
