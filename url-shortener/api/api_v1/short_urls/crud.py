@@ -111,8 +111,7 @@ class ShortUrlsStorage(BaseModel):
         for field_name, value in short_url_in.model_dump(exclude_unset=True).items():
             setattr(short_url, field_name, value)
             parameters.append("%s=%r" % (field_name, value))  # noqa: UP031
-            # parameters.append("{}={!r}".format(field_name, value))
-            # parameters.append(f"{field_name}={value!r}")
+
         self.save_short_url(short_url=short_url)
         log.info(
             "Updated partial short url %s",
