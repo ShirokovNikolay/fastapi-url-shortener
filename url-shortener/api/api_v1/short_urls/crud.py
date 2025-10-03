@@ -29,7 +29,7 @@ class ShortUrlBaseError(Exception):
     """
 
 
-class ShortUrlAlreadyExists(ShortUrlBaseError):
+class ShortUrlAlreadyExistsError(ShortUrlBaseError):
     """
     Raised on short url creation if such slug already exists.
     """
@@ -49,7 +49,8 @@ class ShortUrlsStorage(BaseModel):
         return [
             ShortUrl.model_validate_json(value)
             for value in cast(
-                Iterable[str], redis.hvals(name=config.REDIS_SHORT_URLS_HASH_NAME),
+                Iterable[str],
+                redis.hvals(name=config.REDIS_SHORT_URLS_HASH_NAME),
             )
         ]
 
@@ -82,7 +83,7 @@ class ShortUrlsStorage(BaseModel):
         if not self.exists(short_url_in.slug):
             return self.create(short_url_in)
 
-        raise ShortUrlAlreadyExists(short_url_in.slug)
+        raise ShortUrlAlreadyExistsError(short_url_in.slug)
 
     def delete_by_slug(self, slug: str) -> None:
         redis.hdel(
@@ -109,7 +110,9 @@ class ShortUrlsStorage(BaseModel):
         parameters = []
         for field_name, value in short_url_in.model_dump(exclude_unset=True).items():
             setattr(short_url, field_name, value)
-            parameters.append("%s=%r" % (field_name, value))
+            parameters.append("%s=%r" % (field_name, value))  # noqa: UP031
+            # parameters.append("{}={!r}".format(field_name, value))
+            # parameters.append(f"{field_name}={value!r}")
         self.save_short_url(short_url=short_url)
         log.info(
             "Updated partial short url %s",

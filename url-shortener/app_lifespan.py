@@ -5,7 +5,7 @@ from fastapi import FastAPI
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:  # noqa: ARG001
     # Действия до запуска приложения.
     # Ставим функцию на паузу на время
     # работы приложения.
