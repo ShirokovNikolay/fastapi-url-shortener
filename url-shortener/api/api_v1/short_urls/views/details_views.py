@@ -6,17 +6,16 @@ from fastapi import (
     status,
 )
 
-from schemas.short_url import (
-    ShortUrl,
-    ShortUrlRead,
-    ShortUrlPartialUpdate,
-    ShortUrlUpdate,
-)
-
+from api.api_v1.short_urls.crud import storage
 from api.api_v1.short_urls.dependencies import (
     prefetch_short_urls,
 )
-from api.api_v1.short_urls.crud import storage
+from schemas.short_url import (
+    ShortUrl,
+    ShortUrlPartialUpdate,
+    ShortUrlRead,
+    ShortUrlUpdate,
+)
 
 router = APIRouter(
     prefix="/{slug}",
