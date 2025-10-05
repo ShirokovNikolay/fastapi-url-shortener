@@ -26,3 +26,24 @@ class ShortUrlCreateTestCase(TestCase):
             short_url_in.target_url,
             short_url.target_url,
         )
+
+    def test_short_url_create_accepts_different_urls(self) -> None:
+        urls = [
+            "https://example.com",
+            "http://example.com",
+            "http://abc.example.com",
+            "https://www.example.com",
+        ]
+
+        for url in urls:
+            with self.subTest(url=url, msg=f"test-url-{url}"):
+                short_url_create = ShortUrlCreate(
+                    slug="some-slug",
+                    description="some-description",
+                    target_url=url,
+                )
+
+                self.assertEqual(
+                    url.rstrip("/"),
+                    short_url_create.model_dump(mode="json")["target_url"].rstrip("/"),
+                )
