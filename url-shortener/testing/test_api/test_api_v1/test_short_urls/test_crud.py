@@ -17,7 +17,7 @@ if getenv("TESTING") != "1":
     )
 
 
-class ShortUrlsStorageTestCase(TestCase):
+class ShortUrlsStorageUpdateTestCase(TestCase):
     def setUp(self) -> None:
         self.short_url = self.create_short_url()
 
