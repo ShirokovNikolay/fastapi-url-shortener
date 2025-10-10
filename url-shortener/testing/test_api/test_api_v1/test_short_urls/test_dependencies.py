@@ -11,4 +11,4 @@ class TestUnsafeMethods:
         assert not UNSAFE_METHODS & safe_methods
 
     def test_all_methods_are_upper(self) -> None:
-        return all(method.isupper() for method in UNSAFE_METHODS)
+        assert all(method.isupper() for method in UNSAFE_METHODS)
