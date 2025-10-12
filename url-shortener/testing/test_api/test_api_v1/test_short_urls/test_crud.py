@@ -1,5 +1,6 @@
 import random
 import string
+from collections.abc import Generator
 from typing import ClassVar
 from unittest import TestCase
 
@@ -28,8 +29,11 @@ def create_short_url() -> ShortUrl:
     return storage.create(short_url_in)
 
 
-def short_url() -> ShortUrl:
-    return create_short_url()
+@pytest.fixture()
+def short_url() -> Generator[ShortUrl]:
+    short_url = create_short_url()
+    yield short_url
+    storage.delete(short_url)
 
 
 class ShortUrlsStorageUpdateTestCase(TestCase):
@@ -115,7 +119,6 @@ class ShortUrlsStorageGetTestCase(TestCase):
                 )
 
 
-@pytest.fixture()
 def test_create_or_raise_if_exists(short_url: ShortUrl) -> None:
     short_url_create = ShortUrlCreate(**short_url.model_dump())
     with pytest.raises(
