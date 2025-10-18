@@ -64,8 +64,6 @@ def read_short_urls_list() -> list[ShortUrl]:
 def create_short_url(
     short_url_create: ShortUrlCreate,
 ) -> ShortUrl:
-    if not storage.get_by_slug(slug=short_url_create.slug):
-        return storage.create(short_url_in=short_url_create)
     try:
         return storage.create_or_raise_if_exists(short_url_create)
     except ShortUrlAlreadyExistsError:
