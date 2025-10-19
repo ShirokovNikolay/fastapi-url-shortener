@@ -14,15 +14,20 @@ if getenv("TESTING") != "1":
     )
 
 
-def build_short_url_create(slug: str) -> ShortUrlCreate:
+def build_short_url_create(
+    slug: str,
+    description: str = "A short url",
+) -> ShortUrlCreate:
     return ShortUrlCreate(
         slug=slug,
-        description="A short url",
+        description=description,
         target_url="https://example.com",
     )
 
 
-def build_short_url_create_random_slug() -> ShortUrlCreate:
+def build_short_url_create_random_slug(
+    description: str = "A short url",
+) -> ShortUrlCreate:
     return ShortUrlCreate(
         slug="".join(
             random.choices(  # noqa: S311
@@ -30,18 +35,28 @@ def build_short_url_create_random_slug() -> ShortUrlCreate:
                 k=8,
             ),
         ),
-        description="A short url",
+        description=description,
         target_url="https://example.com",
     )
 
 
-def create_short_url(slug: str) -> ShortUrl:
-    short_url_in = build_short_url_create(slug=slug)
+def create_short_url(
+    slug: str,
+    description: str = "A short url",
+) -> ShortUrl:
+    short_url_in = build_short_url_create(
+        slug=slug,
+        description=description,
+    )
     return storage.create(short_url_in)
 
 
-def create_short_url_random_slug() -> ShortUrl:
-    short_url_in = build_short_url_create_random_slug()
+def create_short_url_random_slug(
+    description: str = "A short url",
+) -> ShortUrl:
+    short_url_in = build_short_url_create_random_slug(
+        description=description,
+    )
     return storage.create(short_url_in)
 
 
