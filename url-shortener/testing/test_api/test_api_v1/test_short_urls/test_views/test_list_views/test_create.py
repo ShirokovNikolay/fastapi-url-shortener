@@ -48,7 +48,7 @@ def test_create_short_url_already_exists(
     assert response_data["detail"] == expected_error_detail, response_data
 
 
-class TestCreateInvalidShortUrl:
+class TestCreateInvalid:
     @pytest.fixture(
         params=[
             pytest.param(
