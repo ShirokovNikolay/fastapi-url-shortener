@@ -1,5 +1,3 @@
-from typing import reveal_type
-
 from redis import Redis
 
 from core import config
@@ -21,7 +19,7 @@ def main() -> None:
     b = 2
     c = add(a, b)
     print("Type c:", type(c))
-    reveal_type(c)
+    # reveal_type(c)
     print(redis.ping())
     redis.set("name", "Nikolay")
     redis.set("foo", "bar")
