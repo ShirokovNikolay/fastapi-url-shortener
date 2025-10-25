@@ -8,4 +8,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: My first step in GitHub Action
-        run: echo "Hello action!"
+        run: echo "Hello action ${{github.event_name}}!"
