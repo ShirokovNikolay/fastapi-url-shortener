@@ -27,7 +27,6 @@ def main() -> None:
     print(
         [
             redis.get("foo"),
-            redis.get("number"),
             redis.get("spam"),
         ],
     )
