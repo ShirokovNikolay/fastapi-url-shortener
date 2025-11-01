@@ -7,6 +7,7 @@
 [![Ruff](https://img.shields.io/badge/Ruff-linter-FCC21B?logo=ruff&logoColor=black&style=for-the-badge)](https://github.com/astral-sh/ruff)
 [![Mypy](https://img.shields.io/badge/Mypy-checked-1F5082?logo=python&logoColor=white&style=for-the-badge)](http://mypy-lang.org/)
 [![uv](https://img.shields.io/badge/uv-managed-00C853?logo=uv&logoColor=white&style=for-the-badge)](https://github.com/astral-sh/uv)
+[![Pre-commit](https://img.shields.io/badge/Pre--commit-enabled-00C853?logo=precommit&logoColor=white&style=for-the-badge)](https://pre-commit.com)
 
 ## Develop
 
