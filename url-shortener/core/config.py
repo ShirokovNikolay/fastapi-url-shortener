@@ -61,8 +61,10 @@ class RedisConfig(BaseModel):
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        cli_parse_args=True,
         case_sensitive=False,
+        env_file=BASE_DIR / ".env",
+        env_nested_delimiter="__",
+        env_prefix="URL_SHORTENER__",
     )
     logging: LoggingConfig = LoggingConfig()
     redis: RedisConfig = RedisConfig()
