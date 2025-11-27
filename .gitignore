@@ -221,3 +221,4 @@ __marimo__/
 
 short-urls.json
 .secrets
+config.local.yaml
